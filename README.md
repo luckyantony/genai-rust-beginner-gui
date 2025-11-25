@@ -36,4 +36,4 @@ See [QUICKSTART.md](QUICKSTART.md) for detailed setup.
 Fork & PR! Tested on WSL Ubuntu. Questions? Open issue.
 
 **Moringa School Capstone 2025 • Luckyantony Leshan**  
-[Full Toolkit Docs](PROJECT_SUMMARY.md) | [AI Prompts](docs/ai_prompts_used.md)
+[Full Toolkit Docs](PROJECT_SUMMARY.md) | [AI Prompts](AI_PROMPTS_USED.md)
