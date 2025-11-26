@@ -16,7 +16,7 @@ A beginner's toolkit for building native desktop GUIs in **pure Rust** using [eg
 
 **Demo Output:**  
 ![App Demo](screenshots/app-running.png.png)  
-*Screenshot: Full GUI window open with "Nairobi" entered, showing "22.5°C • Clear sky" in large bold text, spinner gone, and a dad joke displayed below the separator. This demonstrates the complete working app after a successful API call.*
+ This demonstrates the complete working app after a successful API call.*
 
 ## 🚀 Quick Start
 See [QUICKSTART.md](QUICKSTART.md) for detailed setup.
