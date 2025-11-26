@@ -87,7 +87,6 @@ Prompts used (12 prompts, 4 days) on ai.moringaschool.com:
 | 9  | Thu | WMO → description          | Human text             | Fun output   |
 | 10 | Thu | Window size control        | Better layout          | Polish       |
 | 11 | Fri | Vertical layout            | Final structure        | Consistent   |
-| 12 | Fri | Moringa Markdown template  | Docs auto-written      | 70% speed-up |
 
 ---
 
