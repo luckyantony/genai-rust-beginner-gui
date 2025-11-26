@@ -1,4 +1,3 @@
-// main.rs
 use eframe::{egui, App, NativeOptions};
 use egui::*;
 use serde::Deserialize;
@@ -29,7 +28,6 @@ fn main() -> Result<(), eframe::Error> {
         "Weather & Dad Jokes • Rust GUI",
         options,
         Box::new(|cc| {
-            // Give egui a place to store temporary data
             let mut app = MyApp::default();
             app.ctx = Some(cc.egui_ctx.clone());
             Ok(Box::new(app))
@@ -40,7 +38,7 @@ fn main() -> Result<(), eframe::Error> {
 struct MyApp {
     city: String,
     fetching: bool,
-    ctx: Option<egui::Context>, // We store this to request repaint from background
+    ctx: Option<egui::Context>,
 }
 
 impl Default for MyApp {
@@ -55,7 +53,6 @@ impl Default for MyApp {
 
 impl App for MyApp {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        // Save context for background thread
         self.ctx = Some(ctx.clone());
 
         CentralPanel::default().show(ctx, |ui| {
@@ -74,15 +71,14 @@ impl App for MyApp {
                 if ui.button("Get Weather").clicked()
                     || (enter_pressed && !self.city.trim().is_empty())
                 {
-                    if self.fetching { return; } // prevent double click
+                    if self.fetching { return; }
 
                     let city = self.city.trim().to_string();
                     self.fetching = true;
 
                     let ctx = ctx.clone();
-                    // Proper way for eframe 0.28: spawn a thread + poll with eframe::eframe::epaint::epaint_wgpu::spawn
                     std::thread::spawn(move || {
-                        let result = pollster::block_on(fetch_weather(&city));
+                        let result = fetch_weather(&city);
                         let text = result.unwrap_or_else(|e| format!("Error: {e}"));
 
                         ctx.memory_mut(|mem| mem.data.insert_temp("result".into(), text));
@@ -140,15 +136,16 @@ impl App for MyApp {
     }
 }
 
-async fn fetch_weather(city: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+// BLOCKING VERSION — NO async, NO tokio, NO pollster needed
+fn fetch_weather(city: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
     let geo_url = format!(
         "https://geocoding-api.open-meteo.com/v1/search?name={}&count=1&language=en",
         urlencoding::encode(city)
     );
 
-    let resp = reqwest::get(&geo_url).await?.json::<serde_json::Value>().await?;
+    let resp: serde_json::Value = reqwest::blocking::get(&geo_url)?.json()?;
 
-    let results = resp["results"].as_array().ok_or("No results")?;
+    let results = resp["results"].as_array().ok_or("City not found")?;
     if results.is_empty() {
         return Err("City not found".into());
     }
@@ -160,7 +157,7 @@ async fn fetch_weather(city: &str) -> Result<String, Box<dyn std::error::Error +
         "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code"
     );
 
-    let data: Weather = reqwest::get(&weather_url).await?.json().await?;
+    let data: Weather = reqwest::blocking::get(&weather_url)?.json()?;
     let description = code_to_text(data.current.weather_code);
 
     Ok(format!("{:.1}°C • {description}", data.current.temperature_2m))
